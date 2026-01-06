@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OBS Glitch Slideshow</title>
+  <style>
+    :root {
+      /* Glitch effect configuration */
+      --gap-horizontal: 10px;
+      --gap-vertical: 5px;
+      --time-anim: 3s;
+      --blend-mode-1: none;
+      --blend-mode-2: none;
+      --blend-mode-3: none;
+      --blend-mode-4: none;
+      --blend-mode-5: overlay;
+      --blend-color-1: transparent;
+      --blend-color-2: transparent;
+      --blend-color-3: transparent;
+      --blend-color-4: transparent;
+      --blend-color-5: #000;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: transparent;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .slideshow-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .slide.active {
+      opacity: 1;
+      z-index: 1;
+    }
+
+    .slide.previous {
+      opacity: 1;
+      z-index: 0;
+    }
+
+    /* Glitch container */
+    .glitch {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .glitch__img {
+      position: absolute;
+      top: calc(-1 * var(--gap-vertical));
+      left: calc(-1 * var(--gap-horizontal));
+      transform: translate3d(0, 0, 0);
+      background-position: center;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-color: var(--blend-color-1);
+      background-blend-mode: var(--blend-mode-1);
+      width: calc(100% + var(--gap-horizontal) * 2);
+      height: calc(100% + var(--gap-vertical) * 2);
+    }
+
+    /* First glitch layer (base) must match slide image size exactly */
+    .glitch__img:nth-child(1) {
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Set the background colors for the glitch images */
+    .glitch__img:nth-child(2) {
+      background-color: var(--blend-color-2);
+      background-blend-mode: var(--blend-mode-2);
+    }
+
+    .glitch__img:nth-child(3) {
+      background-color: var(--blend-color-3);
+      background-blend-mode: var(--blend-mode-3);
+    }
+
+    .glitch__img:nth-child(4) {
+      background-color: var(--blend-color-4);
+      background-blend-mode: var(--blend-mode-4);
+    }
+
+    .glitch__img:nth-child(5) {
+      background-color: var(--blend-color-5);
+      background-blend-mode: var(--blend-mode-5);
+    }
+
+    /* Hide all glitch images initially */
+    .glitch__img {
+      opacity: 0;
+    }
+
+    /* During transition, gradually reveal the base layer (new image) */
+    .glitch.active .glitch__img:nth-child(1) {
+      animation: glitch-base-reveal var(--time-anim) ease-out forwards;
+    }
+
+    /* Glitch layers appear with their animations */
+    .glitch.active .glitch__img:nth-child(n+2) {
+      animation-fill-mode: forwards;
+    }
+
+    .glitch.active .glitch__img:nth-child(2) {
+      transform: translate3d(var(--gap-horizontal), 0, 0);
+      animation: glitch-anim-1-with-opacity var(--time-anim) linear forwards;
+    }
+
+    .glitch.active .glitch__img:nth-child(3) {
+      transform: translate3d(calc(-1 * var(--gap-horizontal)), 0, 0);
+      animation: glitch-anim-2-with-opacity var(--time-anim) linear forwards;
+    }
+
+    .glitch.active .glitch__img:nth-child(4) {
+      transform: translate3d(0, calc(-1 * var(--gap-vertical)), 0) scale3d(-1, -1, 1);
+      animation: glitch-anim-3-with-opacity var(--time-anim) linear forwards;
+    }
+
+    .glitch.active .glitch__img:nth-child(5) {
+      animation: glitch-anim-flash var(--time-anim) step-end forwards;
+    }
+
+    /* Flash animation */
+    @keyframes glitch-anim-flash {
+      0%, 5% {
+        transform: translate3d(var(--gap-horizontal), var(--gap-vertical), 0);
+        opacity: 0.2;
+      }
+      5.5%, 100% {
+        transform: translate3d(0, 0, 0);
+        opacity: 0;
+      }
+    }
+
+    /* Base layer gradual reveal - new image fades in progressively */
+    @keyframes glitch-base-reveal {
+      0% {
+        opacity: 0;
+      }
+      15% {
+        opacity: 0.15;
+      }
+      30% {
+        opacity: 0.35;
+      }
+      45% {
+        opacity: 0.5;
+      }
+      60% {
+        opacity: 0.65;
+      }
+      75% {
+        opacity: 0.8;
+      }
+      90% {
+        opacity: 0.95;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    /* Glitch layer animations with opacity for gradual effect */
+    @keyframes glitch-anim-1-with-opacity {
+      0% {
+        opacity: 0;
+        clip-path: polygon(0 2%, 100% 2%, 100% 5%, 0 5%);
+      }
+      5% {
+        opacity: 0.8;
+      }
+      10% {
+        clip-path: polygon(0 15%, 100% 15%, 100% 15%, 0 15%);
+      }
+      20% {
+        clip-path: polygon(0 10%, 100% 10%, 100% 20%, 0 20%);
+      }
+      30% {
+        clip-path: polygon(0 1%, 100% 1%, 100% 2%, 0 2%);
+      }
+      40% {
+        clip-path: polygon(0 33%, 100% 33%, 100% 33%, 0 33%);
+      }
+      50% {
+        clip-path: polygon(0 44%, 100% 44%, 100% 44%, 0 44%);
+      }
+      60% {
+        clip-path: polygon(0 50%, 100% 50%, 100% 20%, 0 20%);
+      }
+      70% {
+        clip-path: polygon(0 70%, 100% 70%, 100% 70%, 0 70%);
+      }
+      80% {
+        opacity: 0.6;
+        clip-path: polygon(0 80%, 100% 80%, 100% 80%, 0 80%);
+      }
+      90% {
+        opacity: 0.3;
+        clip-path: polygon(0 50%, 100% 50%, 100% 55%, 0 55%);
+      }
+      100% {
+        opacity: 0;
+        clip-path: polygon(0 70%, 100% 70%, 100% 80%, 0 80%);
+      }
+    }
+
+    @keyframes glitch-anim-2-with-opacity {
+      0% {
+        opacity: 0;
+        clip-path: polygon(0 25%, 100% 25%, 100% 30%, 0 30%);
+      }
+      8% {
+        opacity: 0.7;
+      }
+      15% {
+        clip-path: polygon(0 3%, 100% 3%, 100% 3%, 0 3%);
+      }
+      22% {
+        clip-path: polygon(0 5%, 100% 5%, 100% 20%, 0 20%);
+      }
+      31% {
+        clip-path: polygon(0 20%, 100% 20%, 100% 20%, 0 20%);
+      }
+      45% {
+        clip-path: polygon(0 40%, 100% 40%, 100% 40%, 0 40%);
+      }
+      51% {
+        clip-path: polygon(0 52%, 100% 52%, 100% 59%, 0 59%);
+      }
+      63% {
+        clip-path: polygon(0 60%, 100% 60%, 100% 60%, 0 60%);
+      }
+      76% {
+        opacity: 0.5;
+        clip-path: polygon(0 75%, 100% 75%, 100% 75%, 0 75%);
+      }
+      85% {
+        opacity: 0.2;
+        clip-path: polygon(0 65%, 100% 65%, 100% 40%, 0 40%);
+      }
+      100% {
+        opacity: 0;
+        clip-path: polygon(0 14%, 100% 14%, 100% 33%, 0 33%);
+      }
+    }
+
+    @keyframes glitch-anim-3-with-opacity {
+      0% {
+        opacity: 0;
+        clip-path: polygon(0 1%, 100% 1%, 100% 3%, 0 3%);
+      }
+      5% {
+        opacity: 0.6;
+        clip-path: polygon(0 10%, 100% 10%, 100% 9%, 0 9%);
+      }
+      10% {
+        clip-path: polygon(0 5%, 100% 5%, 100% 6%, 0 6%);
+      }
+      25% {
+        clip-path: polygon(0 20%, 100% 20%, 100% 20%, 0 20%);
+      }
+      30% {
+        clip-path: polygon(0 30%, 100% 30%, 100% 25%, 0 25%);
+      }
+      40% {
+        clip-path: polygon(0 20%, 100% 20%, 100% 21%, 0 21%);
+      }
+      50% {
+        clip-path: polygon(0 30%, 100% 30%, 100% 31%, 0 31%);
+      }
+      60% {
+        clip-path: polygon(0 80%, 100% 80%, 100% 75%, 0 75%);
+      }
+      70% {
+        opacity: 0.4;
+        clip-path: polygon(0 90%, 100% 90%, 100% 90%, 0 90%);
+      }
+      85% {
+        opacity: 0.15;
+        clip-path: polygon(0 100%, 100% 100%, 100% 99%, 0 99%);
+      }
+      100% {
+        opacity: 0;
+        clip-path: polygon(0 70%, 100% 70%, 100% 71%, 0 71%);
+      }
+    }
+
+    /* Transition overlay container */
+    .transition-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      z-index: 10;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .transition-overlay.active {
+      opacity: 1;
+    }
+
+    /* Canvas noise overlay */
+    #noise-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      z-index: 15;
+      mix-blend-mode: overlay;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    #noise-canvas.active {
+      animation: canvas-noise 3s ease-out forwards;
+    }
+
+    @keyframes canvas-noise {
+      0% { opacity: 0.5; }
+      20% { opacity: 0.4; }
+      40% { opacity: 0.3; }
+      60% { opacity: 0.2; }
+      80% { opacity: 0.1; }
+      100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="slideshow-container" id="slideshow">
+    <!-- Slides will be dynamically inserted here -->
+  </div>
+
+  <!-- Transition overlay with glitch effect -->
+  <div class="transition-overlay" id="transition-overlay">
+    <div class="glitch" id="glitch-overlay">
+      <div class="glitch__img"></div>
+      <div class="glitch__img"></div>
+      <div class="glitch__img"></div>
+      <div class="glitch__img"></div>
+      <div class="glitch__img"></div>
+    </div>
+  </div>
+
+  <!-- Noise canvas overlay -->
+  <canvas id="noise-canvas"></canvas>
+
+  <script>
+    // Configuration
+    const PLAYLIST_FILE = 'playlist.json';
+    const TRANSITION_DURATION = 3000; // 3 seconds
+
+    // State
+    let currentIndex = 0;
+    let playlist = [];
+    let slideElements = [];
+    let noiseCanvas, noiseCtx;
+    let noiseAnimationId = null;
+
+    // Initialize noise canvas
+    function initNoiseCanvas() {
+      noiseCanvas = document.getElementById('noise-canvas');
+      noiseCtx = noiseCanvas.getContext('2d');
+      resizeNoiseCanvas();
+      window.addEventListener('resize', resizeNoiseCanvas);
+    }
+
+    function resizeNoiseCanvas() {
+      noiseCanvas.width = window.innerWidth;
+      noiseCanvas.height = window.innerHeight;
+    }
+
+    // Generate noise frame
+    function generateNoise() {
+      const imageData = noiseCtx.createImageData(noiseCanvas.width, noiseCanvas.height);
+      const data = imageData.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        const noise = Math.random() * 255;
+        data[i] = noise;     // Red
+        data[i + 1] = noise; // Green
+        data[i + 2] = noise; // Blue
+        data[i + 3] = Math.random() * 80 + 20; // Alpha (semi-transparent)
+      }
+
+      noiseCtx.putImageData(imageData, 0, 0);
+    }
+
+    // Animate noise during transition
+    function startNoiseAnimation() {
+      noiseCanvas.classList.add('active');
+
+      function animateNoise() {
+        generateNoise();
+        noiseAnimationId = requestAnimationFrame(animateNoise);
+      }
+
+      animateNoise();
+
+      // Stop after transition duration
+      setTimeout(() => {
+        stopNoiseAnimation();
+      }, TRANSITION_DURATION);
+    }
+
+    function stopNoiseAnimation() {
+      if (noiseAnimationId) {
+        cancelAnimationFrame(noiseAnimationId);
+        noiseAnimationId = null;
+      }
+      noiseCanvas.classList.remove('active');
+      noiseCtx.clearRect(0, 0, noiseCanvas.width, noiseCanvas.height);
+    }
+
+    // Load playlist from JSON file
+    async function loadPlaylist() {
+      try {
+        const response = await fetch(PLAYLIST_FILE);
+        if (!response.ok) {
+          throw new Error(`Failed to load ${PLAYLIST_FILE}`);
+        }
+        playlist = await response.json();
+        console.log('Playlist loaded:', playlist);
+        return playlist;
+      } catch (error) {
+        console.error('Error loading playlist:', error);
+        // Return empty playlist if file not found
+        return [];
+      }
+    }
+
+    // Create slide elements
+    function createSlides() {
+      const container = document.getElementById('slideshow');
+
+      playlist.forEach((item, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'slide';
+        slide.dataset.index = index;
+
+        const img = document.createElement('img');
+        img.src = item.image;
+        img.alt = `Slide ${index + 1}`;
+        img.draggable = false;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'contain';
+
+        slide.appendChild(img);
+        container.appendChild(slide);
+        slideElements.push(slide);
+      });
+
+      // Set first slide as active
+      if (slideElements.length > 0) {
+        slideElements[0].classList.add('active');
+      }
+    }
+
+    // Update glitch overlay backgrounds
+    function updateGlitchOverlay(imageSrc) {
+      const glitchImages = document.querySelectorAll('#glitch-overlay .glitch__img');
+      glitchImages.forEach(img => {
+        img.style.backgroundImage = `url(${imageSrc})`;
+      });
+    }
+
+    // Transition to next slide with glitch effect
+    function transitionToSlide(nextIndex) {
+      if (slideElements.length === 0) return;
+
+      const currentSlide = slideElements[currentIndex];
+      const nextSlide = slideElements[nextIndex];
+      const transitionOverlay = document.getElementById('transition-overlay');
+      const glitchOverlay = document.getElementById('glitch-overlay');
+
+      // Get next image source for glitch overlay
+      const nextImage = playlist[nextIndex].image;
+      updateGlitchOverlay(nextImage);
+
+      // Remove previous classes
+      slideElements.forEach(slide => {
+        slide.classList.remove('previous');
+      });
+
+      // Set up transition
+      currentSlide.classList.add('previous');
+      currentSlide.classList.remove('active');
+
+      // Activate glitch overlay
+      transitionOverlay.classList.add('active');
+      glitchOverlay.classList.add('active');
+
+      // Start noise animation
+      startNoiseAnimation();
+
+      // Clean up after transition and reveal next slide
+      setTimeout(() => {
+        nextSlide.classList.add('active');
+        currentSlide.classList.remove('previous');
+        transitionOverlay.classList.remove('active');
+        glitchOverlay.classList.remove('active');
+      }, TRANSITION_DURATION);
+
+      currentIndex = nextIndex;
+    }
+
+    // Schedule next transition
+    function scheduleNextTransition() {
+      if (playlist.length === 0) return;
+
+      const currentItem = playlist[currentIndex];
+      const duration = (currentItem.duration || 5) * 1000; // Default 5 seconds
+
+      // Wait for slide display duration, then start transition
+      // Next transition is scheduled after: display duration + transition duration
+      setTimeout(() => {
+        const nextIndex = (currentIndex + 1) % playlist.length;
+        transitionToSlide(nextIndex);
+
+        // Schedule the next transition after the current transition completes
+        // This ensures the new slide is displayed for its full duration
+        setTimeout(() => {
+          scheduleNextTransition();
+        }, TRANSITION_DURATION);
+      }, duration);
+    }
+
+    // Initialize slideshow
+    async function init() {
+      initNoiseCanvas();
+      await loadPlaylist();
+
+      if (playlist.length === 0) {
+        console.warn('No slides in playlist. Please create a playlist.json file.');
+        return;
+      }
+
+      createSlides();
+
+      // Wait for first image to load, then start slideshow
+      const firstImage = slideElements[0].querySelector('img');
+      if (firstImage.complete) {
+        scheduleNextTransition();
+      } else {
+        firstImage.addEventListener('load', () => {
+          scheduleNextTransition();
+        });
+      }
+    }
+
+    // Start when DOM is ready
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

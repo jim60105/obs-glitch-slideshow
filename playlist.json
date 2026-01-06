@@ -1,0 +1,14 @@
+[
+  {
+    "image": "slide1.webp",
+    "duration": 3
+  },
+  {
+    "image": "slide2.webp",
+    "duration": 10
+  },
+  {
+    "image": "slide3.webp",
+    "duration": 5
+  }
+]
