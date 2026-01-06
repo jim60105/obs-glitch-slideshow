@@ -1,48 +1,31 @@
 # OBS Glitch Slideshow
 
-A local HTML slideshow designed for use in OBS Studio browser source, featuring a stunning glitch transition effect inspired by [Codrops CSSGlitchEffect](https://github.com/codrops/CSSGlitchEffect).
+專為 OBS Studio 瀏覽器來源設計的本地 HTML 投影片播放器，受 [Codrops CSSGlitchEffect](https://github.com/codrops/CSSGlitchEffect) 的驚豔故障轉場特效啟發。
 
-## Features
+## 功能特色
 
-- **Local HTML file** - No server required, works directly from your file system
-- **Customizable playlist** - Control slide order and duration via JSON file
-- **Codrops-style glitch transition** - 3-second transition with layered glitch animations
-- **Gradual image replacement** - New image progressively fades in while glitch effects play
-- **Transparent background** - Perfect for overlay use in OBS
-- **Responsive design** - Adapts to any resolution
+- **本地 HTML 檔案** - 無需伺服器，直接從檔案系統執行
+- **可自訂播放清單** - 透過 JSON 檔案控制投影片順序與顯示時間
+- **Codrops 風格故障轉場** - 3 秒轉場時間，包含多層次故障動畫
+- **漸進式圖片替換** - 新圖片在故障特效播放時逐漸淡入
+- **透明背景** - 非常適合在 OBS 中作為疊加層使用
+- **響應式設計** - 適應任何解析度
 
-## Glitch Effect Details
-
-The transition uses a 5-layer glitch effect based on Codrops CSSGlitchEffect demo3:
-
-1. **Base Layer**: The new image gradually fades in from 0% to 100% opacity over 3 seconds
-2. **Glitch Layer 2**: Horizontal slice animation with rightward displacement
-3. **Glitch Layer 3**: Horizontal slice animation with leftward displacement
-4. **Glitch Layer 4**: Inverted/mirrored slice animation with vertical displacement
-5. **Glitch Layer 5**: Brief flash effect at the start of the transition
-
-The effect combines:
-
-- Animated noise canvas overlay
-- Multiple clip-path polygon slice animations
-- Gradual opacity transitions for smooth image replacement
-- Color blend modes for visual interest
-
-## File Structure
+## 檔案結構
 
 ```text
 obs-glitch-slideshow/
-├── index.html       # Main slideshow HTML file
-├── playlist.json    # Slideshow configuration
-├── slide1.jpg       # Your image files
+├── index.html       # 主要投影片播放器 HTML 檔案
+├── playlist.json    # 投影片播放設定
+├── slide1.jpg       # 你的圖片檔案
 ├── slide2.jpg
 ├── slide3.jpg
 └── ...
 ```
 
-## Playlist Configuration
+## 播放清單設定
 
-Create a `playlist.json` file in the same directory as `index.html`:
+在與 `index.html` 相同目錄下建立 `playlist.json` 檔案：
 
 ```json
 [
@@ -61,82 +44,48 @@ Create a `playlist.json` file in the same directory as `index.html`:
 ]
 ```
 
-### Playlist Options
+### 播放清單選項
 
-| Property   | Type   | Description                                            |
-| ---------- | ------ | ------------------------------------------------------ |
-| `image`    | string | Image filename (relative to index.html)                |
-| `duration` | number | Display duration in seconds (before transition starts) |
+| 屬性       | 類型   | 說明                                         |
+| ---------- | ------ | -------------------------------------------- |
+| `image`    | string | 圖片檔名（相對於 index.html 的路徑）         |
+| `duration` | number | 顯示時間（秒），在轉場開始前的靜止顯示時間   |
 
-## OBS Setup
+## OBS 設定
 
-1. Copy all files to a local folder
-2. Add your images to the folder
-3. Configure `playlist.json` with your images and durations
-4. In OBS Studio:
-   - Add a **Browser** source
-   - Check **Local file**
-   - Browse to select `index.html`
-   - Set width/height to match your canvas (e.g., 1920x1080)
-   - Uncheck **Shutdown source when not visible** (optional)
-   - Uncheck **Refresh browser when scene becomes active** (optional)
+1. 將所有檔案複製到本地資料夾
+2. 將你的圖片新增至該資料夾
+3. 使用你的圖片與顯示時間設定 `playlist.json`
+4. 在 OBS Studio 中：
+   - 新增**瀏覽器**來源
+   - 勾選**本地檔案**
+   - 瀏覽並選擇 `index.html`
+   - 設定寬度／高度以符合你的畫布（例如 1920x1080）
+   - 取消勾選**不可見時關閉來源**（選用）
+   - 取消勾選**取得焦點時更新瀏覽器**（選用）
 
-### Recommended OBS Browser Source Settings
+## 瀏覽器相容性
 
-| Setting    | Value                        |
-| ---------- | ---------------------------- |
-| Width      | 1920 (or your canvas width)  |
-| Height     | 1080 (or your canvas height) |
-| FPS        | 60                           |
-| Custom CSS | (leave empty)                |
+專為基於 Chromium 的瀏覽器（OBS Studio 瀏覽器來源使用）設計。已測試於：
 
-## Supported Image Formats
+- OBS Studio 32.0.4
 
-- JPEG (.jpg, .jpeg)
-- PNG (.png)
-- GIF (.gif)
-- WebP (.webp)
+## 授權條款
 
-## Customization
+### 程式碼
 
-### Transition Duration
+<img src="https://github.com/user-attachments/assets/717be0f4-5f3b-42b0-9b75-5e59149ab4b8" alt="gplv3" width="300" />
 
-Edit the `TRANSITION_DURATION` constant in `index.html`:
+[GNU GENERAL PUBLIC LICENSE Version 3](LICENSE)
 
-```javascript
-const TRANSITION_DURATION = 3000; // 3 seconds (in milliseconds)
-```
+Copyright (C) 2026 Jim Chen <Jim@ChenJ.im>.
 
-### Glitch Effect CSS Variables
+本程式為自由軟體：您可以依據由自由軟體基金會發布的 GNU 通用公共授權條款（第 3 版，或您選擇的任何後續版本）重新發佈及/或修改本程式。
 
-The glitch effect can be customized via CSS variables in the `:root` selector:
+本程式以期望其有用而發佈，但不提供任何保證；甚至不包含對適銷性或特定用途適用性的默示保證。詳情請參閱 GNU 通用公共授權條款。
 
-```css
-:root {
-  --gap-horizontal: 10px;    /* Horizontal displacement of glitch slices */
-  --gap-vertical: 5px;       /* Vertical displacement of glitch slices */
-  --time-anim: 3s;           /* Animation duration */
-  --blend-mode-5: overlay;   /* Blend mode for flash layer */
-  --blend-color-5: #af4949;  /* Color for flash layer */
-}
-```
+您應已隨本程式收到一份 GNU 通用公共授權條款副本。如果沒有，請參見 <https://www.gnu.org/licenses/>。
 
-### Playlist Filename
+### 圖片
 
-Edit the `PLAYLIST_FILE` constant in `index.html`:
-
-```javascript
-const PLAYLIST_FILE = 'playlist.json';
-```
-
-## Browser Compatibility
-
-Designed for Chromium-based browsers (used by OBS Browser source). Tested with:
-
-- OBS Studio 28.0+
-- Google Chrome 90+
-- Microsoft Edge 90+
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
+三張圖片 (slide1.webp, slide2.webp, slide3.webp) 由[須多夜花](https://sudayoruka.com/)版權所有，僅供此範例使用。
