@@ -1,5 +1,7 @@
 # OBS Glitch Slideshow
 
+[demo.webm](https://github.com/user-attachments/assets/a922203d-702b-48af-a713-febc234cc5c0)
+
 專為 OBS Studio 瀏覽器來源設計的本地 HTML 投影片播放器，受 [Codrops CSSGlitchEffect](https://github.com/codrops/CSSGlitchEffect) 的驚豔故障轉場特效啟發。
 
 ## 功能特色
